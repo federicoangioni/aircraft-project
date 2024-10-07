@@ -39,10 +39,10 @@ beta = np.sqrt(1-M**2)
 eta = 0.95
 
 def QCSweep_to_LESweep(QCSweep, taper_ratio, wing_span, root_chord):
-    return math.atan(math.tan(QCSweep) + (1/4) * ((2 * root_chord) / wing_span) * (1 - taper_ratio))
+    return math.atan(math.tan(QCSweep) + ((1* root_chord) / (2*wing_span)) * (1 - taper_ratio))
 
 def LESweep_to_HalveCordSweep(LESweep, taper_ratio, wing_span, root_chord):
-    return math.atan(math.tan(LESweep) - (1/2) * ((2 * root_chord) / wing_span) * (1 - taper_ratio))
+    return math.atan(math.tan(LESweep) - (root_chord / wing_span) * (1 - taper_ratio))
 
 def LESweep_to_hingelineSweep(LESweep, taper_ratio, wing_span, root_chord, c_f_div_c):
     return math.atan(math.tan(LESweep) - (c_f_div_c) * ((2 * root_chord) / wing_span) * (1 - taper_ratio))
@@ -67,8 +67,8 @@ def deltaC_L_max_f(dC_l_max, S_wf, S, Lambda_hl):
     return dC_L_max
 
 LE_sweep = np.degrees(QCSweep_to_LESweep(c4_sweep, tr, b, c_r))
-HC_sweep = np.degrees(LESweep_to_HalveCordSweep(np.radian(LE_sweep), tr, b, c_r))
-Lambda_hl = np.degrees(LESweep_to_hingelineSweep(tr,b,c_r,cf_c))
+HC_sweep = np.degrees(LESweep_to_HalveCordSweep(np.radians(LE_sweep), tr, b, c_r))
+Lambda_hl = np.degrees(LESweep_to_hingelineSweep(LE_sweep,tr,b,c_r,cf_c))
 
 AR = b**2/S
 AR_limit = 4/((C_1+1)*math.cos(np.radians(LE_sweep)))
@@ -104,10 +104,11 @@ CL = dclalpha*(alphas-alpha_0l)
 print(CL_max, np.degrees(alpha_s))
 
 print(f'The leading edge sweep is: {LE_sweep}')
-print(f'The leading edge sweep is: {LE_sweep}')
+print(f'The Half Chord sweep is: {HC_sweep}')
 print(f'The lower limit AR for High AR DATCOM method is: {AR_limit}')
-print(f'The leading edge sweep is: {LE_sweep}')
 print(f'The CL_max is: {CL_max}')
+print(f'The Aspect ratio is: {AR}')
+print(f'Beta is: {beta}')
 
 fig, axs = plt.subplots(figsize=(8, 8))
 axs.grid(True)
