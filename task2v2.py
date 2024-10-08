@@ -73,9 +73,9 @@ Lambda_hl = np.degrees(LESweep_to_hingelineSweep(LE_sweep,tr,b,c_r,cf_c))
 AR = b**2/S
 AR_limit = 4/((C_1+1)*math.cos(np.radians(LE_sweep)))
 
-dclalpha = 2*np.pi*AR/(2+np.sqrt(4+((AR*beta/eta)**2))*(1+((np.tan(HC_sweep))**2)/(beta**2)))
+dclalpha = 2*np.pi*AR/(2+np.sqrt(4+((AR*beta/eta)**2))*(1+((np.tan(np.radians(HC_sweep)))**2)/(beta**2)))
 
-print(f"The dcl/dalpha slope is {dclalpha*np.pi/180}")
+print(f"The dcl/dalpha slope is {dclalpha}")
 
 
 # C_l max definition for clean wing
@@ -87,7 +87,7 @@ dy = 21.3*0.12
 
 DCLmaxDcl= .82
 alpha_delta_CL_Max = 2.4
-CL_max = .85*cl_max
+CL_max = DCLmaxDcl*cl_max
 alpha_s = CL_max/dclalpha + (alpha_0l) + np.radians(alpha_delta_CL_Max)
 
 cy0 = chordaty(y0,c_r,tr)
@@ -98,6 +98,7 @@ dC_l_max_f_20deg = deltaC_l_max_f(dc_cf_20deg, cf_c, flap_factor)
 dC_L_max_f_20deg = deltaC_L_max_f(dC_l_max_f_20deg, Swf, S, Lambda_hl)
 
 dC_l_max_f_50deg = deltaC_l_max_f(dc_cf_50deg, cf_c, flap_factor)
+dC_L_max_f_50deg = deltaC_L_max_f(dC_l_max_f_50deg, Swf, S, Lambda_hl)
 
 CL = dclalpha*(alphas-alpha_0l)
 
@@ -107,6 +108,8 @@ print(f'The leading edge sweep is: {LE_sweep}')
 print(f'The Half Chord sweep is: {HC_sweep}')
 print(f'The lower limit AR for High AR DATCOM method is: {AR_limit}')
 print(f'The CL_max is: {CL_max}')
+print(f'The alpha_stall is: {np.degrees(alpha_s)}')
+print(f'The CL_alpha is: {dclalpha}')
 print(f'The Aspect ratio is: {AR}')
 print(f'Beta is: {beta}')
 
