@@ -87,7 +87,7 @@ dy = 21.3*0.12
 
 DCLmaxDcl= .82
 alpha_delta_CL_Max = 2.4
-CL_max = .82*cl_max
+CL_max = .85*cl_max
 alpha_s = CL_max/dclalpha + (alpha_0l) + np.radians(alpha_delta_CL_Max)
 
 cy0 = chordaty(y0,c_r,tr)
