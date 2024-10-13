@@ -17,6 +17,7 @@ V_cr = 430 # knots
 h_cruise = 30000 # ft
 
 c_r = 5.392
+c_t = c_r * tr
 
 V = 128 # knots
 T = 288.15 # K
@@ -70,6 +71,12 @@ def dalpha_0L(dalpha_0l, S_wf, S, Lambda_hl):
     dC_L_max = dalpha_0l * (S_wf/S) * math.cos(np.radians(Lambda_hl))
     return dC_L_max
 
+def S_sec(c0,c1,b,y0,y1):
+    return b*(y1-y0)*(c0+c1)/2
+
+def CL_alpha_flapped(S_flapped, S, C_L_alpha_clean):
+    return (S_flapped/S)* C_L_alpha_clean
+
 LE_sweep = np.degrees(QCSweep_to_LESweep(c4_sweep, tr, b, c_r))
 HC_sweep = np.degrees(LESweep_to_HalveCordSweep(LE_sweep, tr, b, c_r))
 Lambda_hl = np.degrees(LESweep_to_hingelineSweep(LE_sweep,tr,b,c_r,cf_c))
@@ -112,6 +119,18 @@ dC_L_max_f_landing = deltaC_L_max_f(dC_l_max_f_landing, Swf, S, Lambda_hl)
 dalpha_0L_takeoff = dalpha_0L(dalpha_0l_takeoff, Swf, S, Lambda_hl)
 dalpha_0L_landing = dalpha_0L(dalpha_0l_landing, Swf, S, Lambda_hl) 
 
+S_sec_1 = S_sec(c_r, cy0, b, 0, y0)
+S_sec_3 = S_sec(cy1, c_t, b, y1, 1)
+
+S_sec_2_land = S_sec(cy0 * cstar_c_landing, cy1 * cstar_c_landing, b, y0, y1)
+S_sec_2_take = S_sec(cy0 * cstar_c_takeoff, cy1 * cstar_c_takeoff, b, y0, y1)
+
+S_take = S_sec_1 + S_sec_2_take + S_sec_3
+S_land = S_sec_1 + S_sec_2_land + S_sec_3
+
+CL_alpha_take = CL_alpha_flapped(S_take, S, dclalpha)
+CL_alpha_land = CL_alpha_flapped(S_land, S, dclalpha)
+
 CL = dclalpha*(alphas-alpha_0l)
 
 print(CL_max, np.degrees(alpha_s))
@@ -136,6 +155,18 @@ print(f'cstar_c_landing is: {cstar_c_landing}')
 print(f'dalpha_takeoff is: {dalpha_0L_takeoff}')
 print(f'dalpha_landing is: {dalpha_0L_landing}')
 
+print(f'S_sec_1 is: {S_sec_1}')
+
+print(f'S_sec_2_take is: {S_sec_2_take}')
+print(f'S_sec_2_land is: {S_sec_2_land}')
+
+print(f'S_sec_3 is: {S_sec_3}')
+
+print(f'S_sec_tot_take is: {S_take}')
+print(f'S_sec_tot_land is: {S_land}')
+
+print(f'C_L_alpha_take is: {CL_alpha_take}')
+print(f'C_L_alpha_land is: {CL_alpha_land}')
 
 fig, axs = plt.subplots(figsize=(8, 8))
 axs.grid(True)
