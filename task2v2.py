@@ -36,7 +36,7 @@ y1 = 0.6
 
 C_1 = 0.5
 
-beta = np.sqrt(1-M**2)
+beta = 1
 eta = 0.95
 
 def QCSweep_to_LESweep(QCSweep, taper_ratio, wing_span, root_chord):
@@ -78,16 +78,16 @@ def CL_alpha_flapped(S_flapped, S, C_L_alpha_clean):
     return (S_flapped/S)* C_L_alpha_clean
 
 LE_sweep = np.degrees(QCSweep_to_LESweep(c4_sweep, tr, b, c_r))
-HC_sweep = np.degrees(LESweep_to_HalveCordSweep(np.radian(LE_sweep), tr, b, c_r))
-Lambda_hl = np.degrees(LESweep_to_hingelineSweep(tr,b,c_r,cf_c))
+HC_sweep = np.degrees(LESweep_to_HalveCordSweep(LE_sweep, tr, b, c_r))
+Lambda_hl = np.degrees(LESweep_to_hingelineSweep(LE_sweep,tr,b,c_r,cf_c))
 
 AR = b**2/S
 AR_limit = 4/((C_1+1)*math.cos(np.radians(LE_sweep)))
 
-dclalpha = 2*np.pi*AR/(2+np.sqrt(4+((AR*beta/eta)**2))*(1+((np.tan(np.radians(HC_sweep)))**2)/(beta**2)))
+dclalpha = 2*np.pi*AR/(2+np.sqrt((4+((AR*beta/eta)**2))*(1+((np.tan(np.radians(HC_sweep)))**2)/(beta**2))))
 
+print(f"The dcl/dalpha slope is {np.degrees(dclalpha**-1)**-1}")
 print(f"The dcl/dalpha slope is {dclalpha}")
-
 
 # C_l max definition for clean wing
 # According to DATCOM zero lift angle is going to be the same
@@ -133,6 +133,11 @@ CL_alpha_land = CL_alpha_flapped(S_land, S, dclalpha)
 
 CL = dclalpha*(alphas-alpha_0l)
 
+alpha_0L_land = alpha_0l+np.radians(dalpha_0L_landing)
+C_L_max_land = CL_max+dC_L_max_f_landing
+
+alpha_s_land = C_L_max_land/CL_alpha_land + alpha_0L_land + np.radians(alpha_delta_CL_Max)
+
 print(CL_max, np.degrees(alpha_s))
 
 print(f'The leading edge sweep is: {LE_sweep}')
@@ -140,7 +145,6 @@ print(f'The Half Chord sweep is: {HC_sweep}')
 print(f'The lower limit AR for High AR DATCOM method is: {AR_limit}')
 print(f'The CL_max is: {CL_max}')
 print(f'The alpha_stall is: {np.degrees(alpha_s)}')
-print(f'The CL_alpha is: {dclalpha}')
 print(f'The Aspect ratio is: {AR}')
 print(f'Beta is: {beta}')
 
@@ -165,8 +169,12 @@ print(f'S_sec_3 is: {S_sec_3}')
 print(f'S_sec_tot_take is: {S_take}')
 print(f'S_sec_tot_land is: {S_land}')
 
-print(f'C_L_alpha_take is: {CL_alpha_take}')
 print(f'C_L_alpha_land is: {CL_alpha_land}')
+print(f'C_L_alpha_land is: {np.degrees(CL_alpha_land**-1)**-1}')
+print(f'alpha_s_land is: {np.degrees(alpha_s_land)}')
+print(f'alpha_s_land is: {alpha_s_land}')
+print(f'CL_max_land is: {C_L_max_land}')
+
 
 fig, axs = plt.subplots(figsize=(8, 8))
 axs.grid(True)
