@@ -78,8 +78,8 @@ def CL_alpha_flapped(S_flapped, S, C_L_alpha_clean):
     return (S_flapped/S)* C_L_alpha_clean
 
 LE_sweep = np.degrees(QCSweep_to_LESweep(c4_sweep, tr, b, c_r))
-HC_sweep = np.degrees(LESweep_to_HalveCordSweep(LE_sweep, tr, b, c_r))
-Lambda_hl = np.degrees(LESweep_to_hingelineSweep(LE_sweep,tr,b,c_r,cf_c))
+HC_sweep = np.degrees(LESweep_to_HalveCordSweep(np.radian(LE_sweep), tr, b, c_r))
+Lambda_hl = np.degrees(LESweep_to_hingelineSweep(tr,b,c_r,cf_c))
 
 AR = b**2/S
 AR_limit = 4/((C_1+1)*math.cos(np.radians(LE_sweep)))

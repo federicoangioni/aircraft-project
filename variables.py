@@ -13,5 +13,3 @@ V_app = 128 # knots
 h_app = 0
 V_cr = 430 # knots
 h_cruise = 30000 # ft
-
-
