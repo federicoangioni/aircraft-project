@@ -67,8 +67,8 @@ def deltaC_L_max_f(dC_l_max, S_wf, S, Lambda_hl):
     return dC_L_max
 
 LE_sweep = np.degrees(QCSweep_to_LESweep(c4_sweep, tr, b, c_r))
-HC_sweep = np.degrees(LESweep_to_HalveCordSweep(np.radian(LE_sweep), tr, b, c_r))
-Lambda_hl = np.degrees(LESweep_to_hingelineSweep(tr,b,c_r,cf_c))
+HC_sweep = np.degrees(LESweep_to_HalveCordSweep(np.radians(LE_sweep), tr, b, c_r))
+Lambda_hl = np.degrees(LESweep_to_hingelineSweep(tr,b,c_r,cf_c, 1/1))
 
 AR = b**2/S
 AR_limit = 4/((C_1+1)*math.cos(np.radians(LE_sweep)))
