@@ -36,7 +36,7 @@ y1 = 0.6
 
 C_1 = 0.5
 
-beta = 1
+beta = 0.981
 eta = 0.95
 
 def QCSweep_to_LESweep(QCSweep, taper_ratio, wing_span, root_chord):
