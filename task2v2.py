@@ -40,7 +40,7 @@ beta = 0.981
 eta = 0.95
 
 def QCSweep_to_LESweep(QCSweep, taper_ratio, wing_span, root_chord):
-    return math.atan(math.tan(QCSweep) + ((1 * root_chord) / (2*wing_span)) * (1 - taper_ratio))
+    return math.atan(math.tan(QCSweep) + (root_chord / (2*wing_span)) * (1 - taper_ratio))
 
 def LESweep_to_HalveCordSweep(LESweep, taper_ratio, wing_span, root_chord):
     return math.atan(math.tan(np.radians(LESweep)) - (root_chord / wing_span) * (1 - taper_ratio))
@@ -78,8 +78,8 @@ def CL_alpha_flapped(S_flapped, S, C_L_alpha_clean):
     return (S_flapped/S)* C_L_alpha_clean
 
 LE_sweep = np.degrees(QCSweep_to_LESweep(c4_sweep, tr, b, c_r))
-HC_sweep = np.degrees(LESweep_to_HalveCordSweep(np.radian(LE_sweep), tr, b, c_r))
-Lambda_hl = np.degrees(LESweep_to_hingelineSweep(tr,b,c_r,cf_c))
+HC_sweep = np.degrees(LESweep_to_HalveCordSweep(LE_sweep, tr, b, c_r))
+Lambda_hl = np.degrees(LESweep_to_hingelineSweep(LE_sweep,tr,b,c_r,cf_c))
 
 AR = b**2/S
 AR_limit = 4/((C_1+1)*math.cos(np.radians(LE_sweep)))
@@ -114,15 +114,27 @@ cstar_c_takeoff = deltaC_l_max_f(dc_cf_takeoff, cf_c, flap_factor)[1]
 
 dC_l_max_f_landing = deltaC_l_max_f(dc_cf_landing, cf_c, flap_factor)[0]
 cstar_c_landing = deltaC_l_max_f(dc_cf_landing, cf_c, flap_factor)[1]
-#dC_L_max_f_landing = deltaC_L_max_f(dC_l_max_f_landing, Swf, S, Lambda_hl)
+dC_L_max_f_landing = deltaC_L_max_f(dC_l_max_f_landing, Swf, S, Lambda_hl)
 
-dalpha_0L_takeoff = dalpha_0L(dalpha_0l_takeoff, Swf, S, Lambda_hl)
+#dalpha_0L_takeoff = dalpha_0L(dalpha_0l_takeoff, Swf, S, Lambda_hl)
 dalpha_0L_landing = dalpha_0L(dalpha_0l_landing, Swf, S, Lambda_hl) 
+
+S_sec_1 = S_sec(c_r, cy0, b, 0, y0)
+S_sec_3 = S_sec(cy1, c_t, b, y1, 1)
+
+S_sec_2_land = S_sec(cy0 * cstar_c_landing, cy1 * cstar_c_landing, b, y0, y1)
+S_sec_2_take = S_sec(cy0 * cstar_c_takeoff, cy1 * cstar_c_takeoff, b, y0, y1)
+
+S_take = S_sec_1 + S_sec_2_take + S_sec_3
+S_land = S_sec_1 + S_sec_2_land + S_sec_3
+
+CL_alpha_take = CL_alpha_flapped(S_take, S, dclalpha)
+CL_alpha_land = CL_alpha_flapped(S_land, S, dclalpha)
 
 CL = dclalpha*(alphas-alpha_0l)
 
 alpha_0L_land = alpha_0l+np.radians(dalpha_0L_landing)
-C_L_max_land = CL_max+dC_L_max_f_landing
+C_L_max_land = CL_max+ dC_L_max_f_landing
 
 alpha_s_land = C_L_max_land/CL_alpha_land + alpha_0L_land + np.radians(alpha_delta_CL_Max)
 
@@ -135,19 +147,32 @@ print(f'The CL_max is: {CL_max}')
 print(f'The alpha_stall is: {np.degrees(alpha_s)}')
 print(f'The Aspect ratio is: {AR}')
 print(f'Beta is: {beta}')
-"""
+
 print(f'Hingeline sweep is: {Lambda_hl}')
 print(f'Flap cr is: {cy0}')
 print(f'Flap ct is: {cy1}')
 print(f'Flapped wing area is: {Swf}')
-print(f'dCL_f_takeoff is: {dC_L_max_f_takeoff}')
+#print(f'dCL_f_takeoff is: {dC_L_max_f_takeoff}')
 print(f'dCL_f_landing is: {dC_L_max_f_landing}')
 print(f'Cstar_c_takeoff is: {cstar_c_takeoff}')
 print(f'cstar_c_landing is: {cstar_c_landing}')
-print(f'dalpha_takeoff is: {dalpha_0L_takeoff}')
+#print(f'dalpha_takeoff is: {dalpha_0L_takeoff}')
 print(f'dalpha_landing is: {dalpha_0L_landing}')
 
+print(f'S_sec_1 is: {S_sec_1}')
 
+print(f'S_sec_2_take is: {S_sec_2_take}')
+print(f'S_sec_2_land is: {S_sec_2_land}')
+
+print(f'S_sec_3 is: {S_sec_3}')
+
+print(f'S_sec_tot_take is: {S_take}')
+print(f'S_sec_tot_land is: {S_land}')
+
+print(f'C_L_alpha_take is: {CL_alpha_take}')
+print(f'C_L_alpha_land is: {CL_alpha_land}')
+
+"""
 fig, axs = plt.subplots(figsize=(8, 8))
 axs.grid(True)
 axs.axhline(linewidth=1, color="k")
@@ -163,3 +188,4 @@ print(np.degrees(alpha_s))
 axs.plot(x[28:42], - 0.00838662*x[28:42]**2 + 0.23708306*x[28:42] - 0.57673129, color = 'black')
 plt.legend()
 #plt.show()
+"""
