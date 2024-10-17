@@ -17,6 +17,7 @@ V_cr = 430 # knots
 h_cruise = 30000 # ft
 
 c_r = 5.392
+c_t = c_r * tr
 
 V = 128 # knots
 T = 288.15 # K
@@ -35,7 +36,7 @@ y1 = 0.6
 
 C_1 = 0.5
 
-beta = np.sqrt(1-M**2)
+beta = 1
 eta = 0.95
 
 def QCSweep_to_LESweep(QCSweep, taper_ratio, wing_span, root_chord):
@@ -70,17 +71,23 @@ def dalpha_0L(dalpha_0l, S_wf, S, Lambda_hl):
     dC_L_max = dalpha_0l * (S_wf/S) * math.cos(np.radians(Lambda_hl))
     return dC_L_max
 
+def S_sec(c0,c1,b,y0,y1):
+    return b*(y1-y0)*(c0+c1)/2
+
+def CL_alpha_flapped(S_flapped, S, C_L_alpha_clean):
+    return (S_flapped/S)* C_L_alpha_clean
+
 LE_sweep = np.degrees(QCSweep_to_LESweep(c4_sweep, tr, b, c_r))
-HC_sweep = np.degrees(LESweep_to_HalveCordSweep(np.radians(LE_sweep), tr, b, c_r))
-#Lambda_hl = np.degrees(LESweep_to_hingelineSweep(tr,b,c_r,cf_c))
+HC_sweep = np.degrees(LESweep_to_HalveCordSweep(np.radian(LE_sweep), tr, b, c_r))
+Lambda_hl = np.degrees(LESweep_to_hingelineSweep(tr,b,c_r,cf_c))
 
 AR = b**2/S
 AR_limit = 4/((C_1+1)*math.cos(np.radians(LE_sweep)))
 
-dclalpha = 2*np.pi*AR/(2+np.sqrt(4+((AR*beta/eta)**2))*(1+((np.tan(np.radians(HC_sweep)))**2)/(beta**2)))
+dclalpha = 2*np.pi*AR/(2+np.sqrt((4+((AR*beta/eta)**2))*(1+((np.tan(np.radians(HC_sweep)))**2)/(beta**2))))
 
+print(f"The dcl/dalpha slope is {np.degrees(dclalpha**-1)**-1}")
 print(f"The dcl/dalpha slope is {dclalpha}")
-
 
 # C_l max definition for clean wing
 # According to DATCOM zero lift angle is going to be the same
@@ -109,10 +116,15 @@ dC_l_max_f_landing = deltaC_l_max_f(dc_cf_landing, cf_c, flap_factor)[0]
 cstar_c_landing = deltaC_l_max_f(dc_cf_landing, cf_c, flap_factor)[1]
 #dC_L_max_f_landing = deltaC_L_max_f(dC_l_max_f_landing, Swf, S, Lambda_hl)
 
-#dalpha_0L_takeoff = dalpha_0L(dalpha_0l_takeoff, Swf, S, Lambda_hl)
-#dalpha_0L_landing = dalpha_0L(dalpha_0l_landing, Swf, S, Lambda_hl) 
+dalpha_0L_takeoff = dalpha_0L(dalpha_0l_takeoff, Swf, S, Lambda_hl)
+dalpha_0L_landing = dalpha_0L(dalpha_0l_landing, Swf, S, Lambda_hl) 
 
 CL = dclalpha*(alphas-alpha_0l)
+
+alpha_0L_land = alpha_0l+np.radians(dalpha_0L_landing)
+C_L_max_land = CL_max+dC_L_max_f_landing
+
+alpha_s_land = C_L_max_land/CL_alpha_land + alpha_0L_land + np.radians(alpha_delta_CL_Max)
 
 print(CL_max, np.degrees(alpha_s))
 
@@ -121,7 +133,6 @@ print(f'The Half Chord sweep is: {HC_sweep}')
 print(f'The lower limit AR for High AR DATCOM method is: {AR_limit}')
 print(f'The CL_max is: {CL_max}')
 print(f'The alpha_stall is: {np.degrees(alpha_s)}')
-print(f'The CL_alpha is: {dclalpha}')
 print(f'The Aspect ratio is: {AR}')
 print(f'Beta is: {beta}')
 """
@@ -135,7 +146,7 @@ print(f'Cstar_c_takeoff is: {cstar_c_takeoff}')
 print(f'cstar_c_landing is: {cstar_c_landing}')
 print(f'dalpha_takeoff is: {dalpha_0L_takeoff}')
 print(f'dalpha_landing is: {dalpha_0L_landing}')
-"""
+
 
 fig, axs = plt.subplots(figsize=(8, 8))
 axs.grid(True)
