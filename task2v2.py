@@ -71,8 +71,8 @@ def dalpha_0L(dalpha_0l, S_wf, S, Lambda_hl):
     return dC_L_max
 
 LE_sweep = np.degrees(QCSweep_to_LESweep(c4_sweep, tr, b, c_r))
-HC_sweep = np.degrees(LESweep_to_HalveCordSweep(np.radian(LE_sweep), tr, b, c_r))
-Lambda_hl = np.degrees(LESweep_to_hingelineSweep(tr,b,c_r,cf_c))
+HC_sweep = np.degrees(LESweep_to_HalveCordSweep(np.radians(LE_sweep), tr, b, c_r))
+#Lambda_hl = np.degrees(LESweep_to_hingelineSweep(tr,b,c_r,cf_c))
 
 AR = b**2/S
 AR_limit = 4/((C_1+1)*math.cos(np.radians(LE_sweep)))
@@ -103,14 +103,14 @@ cy1 = chordaty(y1,c_r,tr)
 Swf = area_wf(cy0, cy1, y0, y1, b)
 dC_l_max_f_takeoff = deltaC_l_max_f(dc_cf_takeoff, cf_c, flap_factor)[0]
 cstar_c_takeoff = deltaC_l_max_f(dc_cf_takeoff, cf_c, flap_factor)[1]
-dC_L_max_f_takeoff = deltaC_L_max_f(dC_l_max_f_takeoff, Swf, S, Lambda_hl)
+#dC_L_max_f_takeoff = deltaC_L_max_f(dC_l_max_f_takeoff, Swf, S, Lambda_hl)
 
 dC_l_max_f_landing = deltaC_l_max_f(dc_cf_landing, cf_c, flap_factor)[0]
 cstar_c_landing = deltaC_l_max_f(dc_cf_landing, cf_c, flap_factor)[1]
-dC_L_max_f_landing = deltaC_L_max_f(dC_l_max_f_landing, Swf, S, Lambda_hl)
+#dC_L_max_f_landing = deltaC_L_max_f(dC_l_max_f_landing, Swf, S, Lambda_hl)
 
-dalpha_0L_takeoff = dalpha_0L(dalpha_0l_takeoff, Swf, S, Lambda_hl)
-dalpha_0L_landing = dalpha_0L(dalpha_0l_landing, Swf, S, Lambda_hl) 
+#dalpha_0L_takeoff = dalpha_0L(dalpha_0l_takeoff, Swf, S, Lambda_hl)
+#dalpha_0L_landing = dalpha_0L(dalpha_0l_landing, Swf, S, Lambda_hl) 
 
 CL = dclalpha*(alphas-alpha_0l)
 
@@ -124,7 +124,7 @@ print(f'The alpha_stall is: {np.degrees(alpha_s)}')
 print(f'The CL_alpha is: {dclalpha}')
 print(f'The Aspect ratio is: {AR}')
 print(f'Beta is: {beta}')
-
+"""
 print(f'Hingeline sweep is: {Lambda_hl}')
 print(f'Flap cr is: {cy0}')
 print(f'Flap ct is: {cy1}')
@@ -135,7 +135,7 @@ print(f'Cstar_c_takeoff is: {cstar_c_takeoff}')
 print(f'cstar_c_landing is: {cstar_c_landing}')
 print(f'dalpha_takeoff is: {dalpha_0L_takeoff}')
 print(f'dalpha_landing is: {dalpha_0L_landing}')
-
+"""
 
 fig, axs = plt.subplots(figsize=(8, 8))
 axs.grid(True)
