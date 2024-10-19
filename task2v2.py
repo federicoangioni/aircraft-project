@@ -11,8 +11,9 @@ c4_sweep = math.radians(17.45)
 tr = 0.235
 L_fus = 35.50
 
-V_app = 128 # knots
+V_app = 65.8489 #m/s
 h_app = 0
+rho_app = 1.225
 V_cr = 430 # knots
 h_cruise = 30000 # ft
 
@@ -138,6 +139,10 @@ C_L_max_land = CL_max+ dC_L_max_f_landing
 
 alpha_s_land = C_L_max_land/CL_alpha_land + alpha_0L_land + np.radians(alpha_delta_CL_Max)
 
+W_des = ((MTOW - (fuel_weight*0.15) + (MTOW-0.8*fuel_weight))/2)*9.81
+
+C_L_des = 1.1* 2 * W_des/(S*rho_app*V_app**2)
+
 print(CL_max, np.degrees(alpha_s))
 
 print(f'The leading edge sweep is: {LE_sweep}')
@@ -172,6 +177,8 @@ print(f'S_sec_tot_land is: {S_land}')
 print(f'C_L_alpha_take is: {CL_alpha_take}')
 print(f'C_L_alpha_land is: {CL_alpha_land}')
 
+
+print(f'C_L_des is: {C_L_des}')
 """
 fig, axs = plt.subplots(figsize=(8, 8))
 axs.grid(True)
